@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechDoc Services | Technische Dokumentation</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons via CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0f1a;
+            color: white;
+            scroll-behavior: smooth;
+        }
+
+        .hero-gradient {
+            background: radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.15) 0%, transparent 50%);
+        }
+
+        .card-bg {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .card-bg:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-5px);
+            border-color: rgba(37, 99, 235, 0.3);
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .nav-link.active {
+            color: #3b82f6;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-[#0a0f1a]/80 backdrop-blur-md border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center gap-2 cursor-pointer" onclick="showPage('home')">
+                    <div class="w-8 h-8 bg-blue-600 rounded-md flex items-center justify-center">
+                        <div class="w-4 h-4 bg-white rounded-sm transform -rotate-12"></div>
+                    </div>
+                    <span class="text-xl font-bold tracking-tight">TechDoc</span>
+                </div>
+                
+                <div class="hidden md:flex items-center gap-8">
+                    <button onclick="showPage('home')" class="nav-link text-sm font-medium text-gray-400 hover:text-white transition-colors" data-page="home">Home</button>
+                    <button onclick="showPage('services')" class="nav-link text-sm font-medium text-gray-400 hover:text-white transition-colors" data-page="services">Services</button>
+                    <button onclick="showPage('case-studies')" class="nav-link text-sm font-medium text-gray-400 hover:text-white transition-colors" data-page="case-studies">Case Studies</button>
+                    <button onclick="showPage('about')" class="nav-link text-sm font-medium text-gray-400 hover:text-white transition-colors" data-page="about">About Us</button>
+                    <button onclick="showPage('contact')" class="nav-link text-sm font-medium text-gray-400 hover:text-white transition-colors" data-page="contact">Contact</button>
+                    <button onclick="showPage('contact')" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-md text-sm font-semibold transition-all">
+                        Angebot anfordern
+                    </button>
+                </div>
+
+                <div class="md:hidden">
+                    <button onclick="toggleMobileMenu()" class="text-gray-400 hover:text-white">
+                        <i data-lucide="menu" id="menu-icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-[#0a0f1a] border-t border-white/5 px-4 py-6 space-y-4">
+            <button onclick="showPage('home')" class="block w-full text-left text-base font-medium text-gray-400">Home</button>
+            <button onclick="showPage('services')" class="block w-full text-left text-base font-medium text-gray-400">Services</button>
+            <button onclick="showPage('case-studies')" class="block w-full text-left text-base font-medium text-gray-400">Case Studies</button>
+            <button onclick="showPage('about')" class="block w-full text-left text-base font-medium text-gray-400">About Us</button>
+            <button onclick="showPage('contact')" class="block w-full text-left text-base font-medium text-gray-400">Contact</button>
+            <button onclick="showPage('contact')" class="w-full bg-blue-600 text-white px-6 py-3 rounded-md text-base font-semibold">
+                Angebot anfordern
+            </button>
+        </div>
+    </nav>
+
+    <main class="pt-20">
+        <!-- HOME PAGE -->
+        <div id="home" class="page active">
+            <section class="relative pt-20 pb-20 overflow-hidden">
+                <div class="absolute inset-0 hero-gradient pointer-events-none"></div>
+                <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
+                    <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-8 leading-[1.1]">
+                        Technische Dokumentation mit System
+                    </h1>
+                    <p class="text-lg md:text-xl text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+                        Von strukturierter Redaktion bis hin zur IIoT-Dokumentation – wir managen Ihre technischen Inhalte effizient und normgerecht.
+                    </p>
+                    <button onclick="showPage('services')" class="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-md text-lg font-semibold transition-all shadow-lg shadow-blue-600/20">
+                        Services entdecken
+                    </button>
+                </div>
+            </section>
+
+            <section class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-16">
+                    <h2 class="text-4xl font-bold mb-4">Unsere Leistungen</h2>
+                    <p class="text-gray-400 max-w-2xl">
+                        Entdecken Sie unser Spektrum an Dokumentations-Services für Industrie und Software.
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="card-bg p-8 rounded-xl">
+                        <div class="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center mb-6 border border-blue-500/20">
+                            <i data-lucide="code-2" class="text-blue-500"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4">Strukturierte Redaktion</h3>
+                        <p class="text-gray-400 text-sm mb-6">Erstellung modularer Inhalte nach DITA- und XML-Standards für maximale Wiederverwendbarkeit.</p>
+                        <button onclick="showPage('services')" class="text-blue-500 text-sm font-semibold flex items-center gap-2">Mehr erfahren <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+                    </div>
+                    <div class="card-bg p-8 rounded-xl">
+                        <div class="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center mb-6 border border-blue-500/20">
+                            <i data-lucide="cpu" class="text-blue-500"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4">IIoT Dokumentation</h3>
+                        <p class="text-gray-400 text-sm mb-6">Dokumentation komplexer Industrial IoT Systeme und Sensor-Netzwerke für die Industrie 4.0.</p>
+                        <button onclick="showPage('services')" class="text-blue-500 text-sm font-semibold flex items-center gap-2">Mehr erfahren <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- SERVICES PAGE -->
+        <div id="services" class="page">
+            <section class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-20">
+                    <h1 class="text-5xl font-bold mb-6">Unsere Services</h1>
+                    <p class="text-gray-400 max-w-2xl mx-auto text-lg">
+                        End-to-End Lösungen für Engineering, Software und Fertigung.
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Service Cards -->
+                    <div class="card-bg p-8 rounded-xl">
+                        <div class="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center mb-6 border border-blue-500/20"><i data-lucide="code-2" class="text-blue-500"></i></div>
+                        <h3 class="text-xl font-bold mb-4">Strukturierte Redaktion</h3>
+                        <p class="text-gray-400 text-sm">DITA, XML und S1000D Implementierung für modulare Inhalte.</p>
+                    </div>
+                    <div class="card-bg p-8 rounded-xl">
+                        <div class="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center mb-6 border border-blue-500/20"><i data-lucide="cpu" class="text-blue-500"></i></div>
+                        <h3 class="text-xl font-bold mb-4">IIoT & Industrie 4.0</h3>
+                        <p class="text-gray-400 text-sm">Dokumentation für vernetzte Geräte und Smart Factories.</p>
+                    </div>
+                    <div class="card-bg p-8 rounded-xl">
+                        <div class="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center mb-6 border border-blue-500/20"><i data-lucide="terminal" class="text-blue-500"></i></div>
+                        <h3 class="text-xl font-bold mb-4">Software Doku</h3>
+                        <p class="text-gray-400 text-sm">API-Referenzen, SDK-Guides und Entwickler-Portale.</p>
+                    </div>
+                    <div class="card-bg p-8 rounded-xl">
+                        <div class="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center mb-6 border border-blue-500/20"><i data-lucide="database" class="text-blue-500"></i></div>
+                        <h3 class="text-xl font-bold mb-4">CCMS Management</h3>
+                        <p class="text-gray-400 text-sm">Einführung und Optimierung von Redaktionssystemen.</p>
+                    </div>
+                    <div class="card-bg p-8 rounded-xl">
+                        <div class="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center mb-6 border border-blue-500/20"><i data-lucide="globe" class="text-blue-500"></i></div>
+                        <h3 class="text-xl font-bold mb-4">Lokalisierung</h3>
+                        <p class="text-gray-400 text-sm">Technische Übersetzung und kulturelle Anpassung.</p>
+                    </div>
+                    <div class="card-bg p-8 rounded-xl">
+                        <div class="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center mb-6 border border-blue-500/20"><i data-lucide="check-circle-2" class="text-blue-500"></i></div>
+                        <h3 class="text-xl font-bold mb-4">Qualitätssicherung</h3>
+                        <p class="text-gray-400 text-sm">Technische Reviews und Compliance-Audits.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- CASE STUDIES PAGE -->
+        <div id="case-studies" class="page">
+            <section class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-16">
+                    <h1 class="text-5xl font-bold mb-6">Case Studies</h1>
+                    <p class="text-gray-400 max-w-2xl text-lg">Erfolgsgeschichten unserer Kunden.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div class="group cursor-pointer">
+                        <div class="relative overflow-hidden rounded-2xl mb-6">
+                            <img src="https://picsum.photos/seed/factory/800/500" alt="Factory" class="w-full aspect-video object-cover transition-transform duration-500 group-hover:scale-110">
+                            <div class="absolute top-4 left-4 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">IIoT</div>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2 group-hover:text-blue-500 transition-colors">Globaler Fertigungsriese</h3>
+                        <p class="text-gray-400">Einführung eines einheitlichen Doku-Systems für 50+ Standorte weltweit.</p>
+                    </div>
+                    <div class="group cursor-pointer">
+                        <div class="relative overflow-hidden rounded-2xl mb-6">
+                            <img src="https://picsum.photos/seed/code/800/500" alt="Code" class="w-full aspect-video object-cover transition-transform duration-500 group-hover:scale-110">
+                            <div class="absolute top-4 left-4 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">Software</div>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2 group-hover:text-blue-500 transition-colors">FinTech API Portal</h3>
+                        <p class="text-gray-400">Neugestaltung der Entwickler-Doku: 40% weniger Support-Anfragen.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ABOUT PAGE -->
+        <div id="about" class="page">
+            <section class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                    <div>
+                        <h1 class="text-5xl font-bold mb-8">Klarheit durch Technik</h1>
+                        <p class="text-gray-400 text-lg mb-6 leading-relaxed">
+                            TechDoc Services wurde mit einem Ziel gegründet: Komplexe Technik verständlich zu machen. Wir schlagen die Brücke zwischen Engineering und Anwender.
+                        </p>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3 text-gray-300"><i data-lucide="users" class="w-5 h-5 text-blue-500"></i> 50+ Technische Redakteure & Ingenieure</div>
+                            <div class="flex items-center gap-3 text-gray-300"><i data-lucide="globe" class="w-5 h-5 text-blue-500"></i> Kunden in 15 Ländern</div>
+                            <div class="flex items-center gap-3 text-gray-300"><i data-lucide="check-circle-2" class="w-5 h-5 text-blue-500"></i> ISO 9001 zertifizierte Prozesse</div>
+                        </div>
+                    </div>
+                    <div>
+                        <img src="https://picsum.photos/seed/team/800/600" alt="Team" class="rounded-2xl shadow-2xl border border-white/10">
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- CONTACT PAGE -->
+        <div id="contact" class="page">
+            <section class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                    <div>
+                        <h1 class="text-5xl font-bold mb-8">Kontaktieren Sie uns</h1>
+                        <p class="text-gray-400 text-lg mb-12">Bereit für Ihr nächstes Projekt? Unsere Experten beraten Sie gerne.</p>
+                        <div class="space-y-8">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center border border-blue-500/20"><i data-lucide="mail" class="text-blue-500"></i></div>
+                                <div><h4 class="font-bold">E-Mail</h4><p class="text-gray-400">hallo@techdoc-services.de</p></div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center border border-blue-500/20"><i data-lucide="phone" class="text-blue-500"></i></div>
+                                <div><h4 class="font-bold">Telefon</h4><p class="text-gray-400">+49 (0) 123 456789</p></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-bg p-10 rounded-3xl">
+                        <form class="space-y-6" onsubmit="event.preventDefault(); alert('Nachricht gesendet!');">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <input type="text" class="w-full bg-[#0a0f1a] border border-white/10 rounded-lg px-4 py-3 focus:border-blue-500 outline-none" placeholder="Vorname">
+                                <input type="text" class="w-full bg-[#0a0f1a] border border-white/10 rounded-lg px-4 py-3 focus:border-blue-500 outline-none" placeholder="Nachname">
+                            </div>
+                            <input type="email" class="w-full bg-[#0a0f1a] border border-white/10 rounded-lg px-4 py-3 focus:border-blue-500 outline-none" placeholder="E-Mail Adresse">
+                            <textarea rows="4" class="w-full bg-[#0a0f1a] border border-white/10 rounded-lg px-4 py-3 focus:border-blue-500 outline-none" placeholder="Ihre Nachricht"></textarea>
+                            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-lg transition-all flex items-center justify-center gap-2">
+                                <i data-lucide="send" class="w-5 h-5"></i> Nachricht senden
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-20 border-t border-white/5 bg-[#0a0f1a] mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="flex justify-center items-center gap-2 mb-6">
+                <div class="w-8 h-8 bg-blue-600 rounded-md flex items-center justify-center">
+                    <div class="w-4 h-4 bg-white rounded-sm transform -rotate-12"></div>
+                </div>
+                <span class="text-xl font-bold tracking-tight">TechDoc</span>
+            </div>
+            <p class="text-gray-500 text-sm">© 2026 TechDoc Services. Alle Rechte vorbehalten.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Page Navigation Logic
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            // Show target page
+            document.getElementById(pageId).classList.add('active');
+            
+            // Update Nav Links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if(link.getAttribute('data-page') === pageId) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Close mobile menu
+            document.getElementById('mobile-menu').classList.add('hidden');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>
