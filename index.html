@@ -56,26 +56,39 @@
             position: relative;
             width: 100%;
             overflow: hidden;
-            min-height: 450px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            min-height: 400px;
         }
 
         .carousel-track {
             display: flex;
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            align-items: center;
+            width: 100%;
         }
 
         .carousel-slide {
             min-width: 100%;
+            max-width: 100%;
             flex-shrink: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 0 20px;
+            padding: 20px;
+            text-align: center;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        @media (min-width: 768px) {
+            .carousel-container {
+                min-height: 500px;
+            }
+            .carousel-slide {
+                padding: 60px 40px;
+            }
         }
 
         .dot {
@@ -144,37 +157,37 @@
     <main class="pt-20">
         <!-- HOME PAGE -->
         <div id="home" class="page active">
-            <section class="relative pt-12 pb-12 overflow-hidden min-h-[600px] flex items-center">
+            <section class="relative pt-24 pb-12 overflow-hidden flex items-center justify-center min-h-[500px] md:min-h-[600px]">
                 <div class="absolute inset-0 hero-gradient pointer-events-none"></div>
-                <div class="carousel-container max-w-5xl mx-auto px-4 relative z-10">
+                <div class="carousel-container max-w-full mx-auto relative z-10">
                     <div class="carousel-track" id="carousel-track">
                         <!-- Slide 1: Focus on Strategy/System -->
-                        <div class="carousel-slide text-center">
-                            <span class="text-blue-500 font-semibold tracking-widest uppercase text-xs mb-4">Dokumentations-Strategie</span>
-                            <h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-6 leading-tight">
+                        <div class="carousel-slide">
+                            <span class="text-blue-500 font-semibold tracking-widest uppercase text-[10px] md:text-xs mb-4">Dokumentations-Strategie</span>
+                            <h1 class="text-3xl md:text-6xl font-bold tracking-tight mb-6 leading-tight max-w-[90vw]">
                                 Technische Dokumentation <br class="hidden md:block"> mit System
                             </h1>
-                            <p class="text-base md:text-lg text-gray-400 mb-8 max-w-2xl mx-auto leading-relaxed">
+                            <p class="text-sm md:text-lg text-gray-400 mb-8 max-w-[85vw] md:max-w-2xl mx-auto leading-relaxed">
                                 Wir strukturieren Ihre Inhalte effizient und normgerecht – von der Redaktion bis zur Publikation.
                             </p>
                         </div>
                         <!-- Slide 2: Focus on IIoT/Industry -->
-                        <div class="carousel-slide text-center">
-                            <span class="text-blue-500 font-semibold tracking-widest uppercase text-xs mb-4">Industrie 4.0</span>
-                            <h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-6 leading-tight">
+                        <div class="carousel-slide">
+                            <span class="text-blue-500 font-semibold tracking-widest uppercase text-[10px] md:text-xs mb-4">Industrie 4.0</span>
+                            <h1 class="text-3xl md:text-6xl font-bold tracking-tight mb-6 leading-tight max-w-[90vw]">
                                 Intelligente Lösungen <br class="hidden md:block"> für das IIoT
                             </h1>
-                            <p class="text-base md:text-lg text-gray-400 mb-8 max-w-2xl mx-auto leading-relaxed">
+                            <p class="text-sm md:text-lg text-gray-400 mb-8 max-w-[85vw] md:max-w-2xl mx-auto leading-relaxed">
                                 Dokumentation für vernetzte Systeme und Smart Factories. Wir machen Komplexität beherrschbar.
                             </p>
                         </div>
                         <!-- Slide 3: Focus on Software/API -->
-                        <div class="carousel-slide text-center">
-                            <span class="text-blue-500 font-semibold tracking-widest uppercase text-xs mb-4">Software & APIs</span>
-                            <h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-6 leading-tight">
+                        <div class="carousel-slide">
+                            <span class="text-blue-500 font-semibold tracking-widest uppercase text-[10px] md:text-xs mb-4">Software & APIs</span>
+                            <h1 class="text-3xl md:text-6xl font-bold tracking-tight mb-6 leading-tight max-w-[90vw]">
                                 Erstklassige <br class="hidden md:block"> Entwickler-Dokumentation
                             </h1>
-                            <p class="text-base md:text-lg text-gray-400 mb-8 max-w-2xl mx-auto leading-relaxed">
+                            <p class="text-sm md:text-lg text-gray-400 mb-8 max-w-[85vw] md:max-w-2xl mx-auto leading-relaxed">
                                 API-Referenzen und SDK-Guides, die Ihre Entwickler lieben werden. Klar, präzise und hilfreich.
                             </p>
                         </div>
@@ -408,6 +421,8 @@
 
         // Carousel Logic
         let currentSlide = 0;
+        let startX = 0;
+        let isDragging = false;
         const slides = document.querySelectorAll('.carousel-slide');
         const track = document.getElementById('carousel-track');
         const dotsContainer = document.getElementById('carousel-dots');
@@ -444,6 +459,36 @@
             currentSlide = index;
             updateCarousel();
         }
+
+        // Touch Events for Swiping
+        track.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            isDragging = true;
+            clearInterval(autoSlideInterval);
+        }, { passive: true });
+
+        track.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const currentX = e.touches[0].clientX;
+            const diff = startX - currentX;
+            // Optional: add visual feedback during drag
+        }, { passive: true });
+
+        track.addEventListener('touchend', (e) => {
+            if (!isDragging) return;
+            const endX = e.changedTouches[0].clientX;
+            const diff = startX - endX;
+
+            if (Math.abs(diff) > 50) { // Threshold for swipe
+                if (diff > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
+                }
+            }
+            isDragging = false;
+            resetAutoSlide();
+        }, { passive: true });
 
         // Auto-slide every 6 seconds
         let autoSlideInterval = setInterval(nextSlide, 6000);
