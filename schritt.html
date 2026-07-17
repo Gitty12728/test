@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schritt-für-Schritt Video Recorder</title>
+    <style>
+        :root {
+            --primary: #007bff;
+            --success: #28a745;
+            --danger: #dc3545;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #333333;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            background-color: var(--primary);
+            color: white;
+            transition: opacity 0.2s;
+        }
+
+        button:active {
+            opacity: 0.8;
+        }
+
+        button.secondary {
+            background-color: #6c757d;
+        }
+
+        /* Kamera-Vorschau-Modal */
+        #camera-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: black;
+            z-index: 1000;
+            flex-direction: column;
+        }
+
+        #preview-video {
+            width: 100%;
+            height: 80vh;
+            object-fit: cover;
+        }
+
+        .camera-controls {
+            height: 20vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            background: #111;
+            padding: 10px;
+        }
+
+        .btn-record {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: white;
+            border: 5px solid #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-record.recording {
+            background: var(--danger);
+            border-color: white;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Schritte Liste */
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .step-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+        }
+
+        .step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .step-title-input {
+            border: none;
+            border-bottom: 2px solid #ddd;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 4px;
+            width: 70%;
+        }
+
+        .step-title-input:focus {
+            outline: none;
+            border-bottom-color: var(--primary);
+        }
+
+        .btn-delete {
+            background: none;
+            color: var(--danger);
+            border: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            flex: none;
+            width: auto;
+            padding: 5px;
+        }
+
+        .step-video-container {
+            width: 100%;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .step-video-container.has-video {
+            display: block;
+        }
+
+        .step-video-container video {
+            width: 100%;
+            display: block;
+        }
+
+        .step-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-action {
+            padding: 8px 12px;
+            font-size: 0.9rem;
+        }
+        
+        .btn-rec-trigger { background-color: var(--primary); }
+        .btn-download { background-color: var(--success); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Video Schritt-Recorder</h1>
+    
+    <div class="controls">
+        <button id="add-step-btn">+ Schritt hinzufügen</button>
+    </div>
+
+    <div id="steps-container" class="steps-list">
+        <!-- Hier landen die flexiblen Schritte -->
+    </div>
+</div>
+
+<!-- Vollbild Kamera Overlay -->
+<div id="camera-container">
+    <video id="preview-video" autoplay muted playsinline></video>
+    <div class="camera-controls">
+        <button id="close-camera-btn" class="secondary" style="width: auto;">Abbrechen</button>
+        <div id="record-btn" class="btn-record"></div>
+        <div style="width: 85px;"></div> <!-- Dummy für Symmetrie -->
+    </div>
+</div>
+
+<script>
+    let stepCount = 0;
+    let activeStepId = null;
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let stream = null;
+
+    const stepsContainer = document.getElementById('steps-container');
+    const addStepBtn = document.getElementById('add-step-btn');
+    const cameraContainer = document.getElementById('camera-container');
+    const previewVideo = document.getElementById('preview-video');
+    const recordBtn = document.getElementById('record-btn');
+    const closeCameraBtn = document.getElementById('close-camera-btn');
+
+    // Initial einen Schritt erstellen
+    addNewStep();
+
+    addStepBtn.addEventListener('click', () => addNewStep());
+    closeCameraBtn.addEventListener('click', stopCameraView);
+
+    function addNewStep() {
+        stepCount++;
+        const currentStep = stepCount;
+        
+        const card = document.createElement('div');
+        card.className = 'step-card';
+        card.id = `step-card-${currentStep}`;
+        
+        card.innerHTML = `
+            <div class="step-header">
+                <input type="text" class="step-title-input" value="Schritt ${currentStep}" placeholder="Schrittname...">
+                <button class="btn-delete" onclick="deleteStep(${currentStep})">Löschen</button>
+            </div>
+            <div class="step-video-container" id="video-container-${currentStep}">
+                <video id="recorded-video-${currentStep}" controls playsinline></video>
+            </div>
+            <div class="step-actions">
+                <button class="btn-action btn-rec-trigger" onclick="startRecordingFlow(${currentStep})">Video aufnehmen</button>
+                <button class="btn-action btn-download" id="download-btn-${currentStep}" style="display:none;" onclick="downloadStepVideo(${currentStep})">Speichern</button>
+            </div>
+        `;
+        
+        stepsContainer.appendChild(card);
+    }
+
+    function deleteStep(id) {
+        const card = document.getElementById(`step-card-${id}`);
+        if(card) card.remove();
+    }
+
+    async function startRecordingFlow(stepId) {
+        activeStepId = stepId;
+        recordedChunks = [];
+        
+        try {
+            // Kamera anfordern (environment = Rückkamera auf Android)
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: { ideal: "environment" } },
+                audio: true
+            });
+            
+            previewVideo.srcObject = stream;
+            cameraContainer.style.display = 'flex';
+            
+            // Event-Listener für den Aufnahme-Button aufsetzen
+            recordBtn.onclick = toggleRecording;
+            
+        } catch (err) {
+            alert("Kamera-Zugriff verweigert oder nicht unterstützt: " + err.message);
+        }
+    }
+
+    function toggleRecording() {
+        if (!mediaRecorder || mediaRecorder.state === "inactive") {
+            // Aufnahme starten
+            recordedChunks = [];
+            
+            // Passenden Codec für Android wählen (H264 oder VP8/VP9)
+            let options = { mimeType: 'video/webm;codecs=vp9' };
+            if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                options = { mimeType: 'video/webm' };
+            }
+
+            mediaRecorder = new MediaRecorder(stream, options);
+            
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data && e.data.size > 0) {
+                    recordedChunks.push(e.data);
+                }
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                const videoURL = URL.createObjectURL(blob);
+                
+                // Video im Schritt-Element platzieren
+                const videoEl = document.getElementById(`recorded-video-${activeStepId}`);
+                const containerEl = document.getElementById(`video-container-${activeStepId}`);
+                const downloadBtn = document.getElementById(`download-btn-${activeStepId}`);
+                
+                videoEl.src = videoURL;
+                containerEl.classList.add('has-video');
+                downloadBtn.style.display = 'block';
+                
+                // Temporär im Fenster-Objekt speichern fürs Herunterladen
+                window[`blob_step_${activeStepId}`] = blob;
+                
+                stopCameraView();
+            };
+
+            mediaRecorder.start();
+            recordBtn.classList.add('recording');
+        } else {
+            // Aufnahme stoppen
+            mediaRecorder.stop();
+            recordBtn.classList.remove('recording');
+        }
+    }
+
+    function stopCameraView() {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+        cameraContainer.style.display = 'none';
+        recordBtn.classList.remove('recording');
+        if (mediaRecorder && mediaRecorder.state !== "inactive") {
+            mediaRecorder.stop();
+        }
+    }
+
+    function downloadStepVideo(id) {
+        const blob = window[`blob_step_${id}`];
+        const titleInput = document.querySelector(`#step-card-${id} .step-title-input`);
+        const title = titleInput ? titleInput.value.replace(/[^a-z0-9]/gi, '_').toLowerCase() : `schritt_${id}`;
+        
+        if (blob) {
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `${title}.webm`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    }
+</script>
+
+</body>
+</html>
